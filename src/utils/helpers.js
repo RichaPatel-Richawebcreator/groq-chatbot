@@ -51,3 +51,10 @@ export const copyToClipboard = async (text) => {
         return false;
     }
 };
+
+export const validateMessage = (message) => {
+    const trimmed = message.trim();
+    if (trimmed.length === 0) return { valid: false };
+    if (trimmed.length > 4000) return { valid: false };
+    return { valid: true, value: trimmed };
+};

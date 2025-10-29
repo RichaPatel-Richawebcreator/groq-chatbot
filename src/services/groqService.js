@@ -1,10 +1,6 @@
-import { GROQ_CONFIG } from "../constants/config";
-import { handleApiError } from "./errorHandler";
+import { GROQ_CONFIG, MESSAGES_CONFIG } from "../constants/config";
 
-const sendMessageToGroq = async (messages) => {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), GROQ_CONFIG.REQUEST_TIMEOUT);
-
+const sendMessageToGroq = async (messages, onChunk, onComplete, onError) => {
     try {
         const response = await fetch(GROQ_CONFIG.API_URL, {
             method: 'POST',
@@ -17,33 +13,50 @@ const sendMessageToGroq = async (messages) => {
                 messages,
                 temperature: GROQ_CONFIG.TEMPERATURE,
                 max_tokens: GROQ_CONFIG.MAX_TOKENS,
+                stream: true,
             }),
-            signal: controller.signal,
         });
 
-        clearTimeout(timeoutId);
-
         if (!response.ok) {
-            const errorData = await response.json().catch(() => ({}));
-            const error = new Error(errorData.error?.message || 'API request failed');
-            error.response = { status: response.status, data: errorData };
-            throw error;
+            throw new Error('API request failed');
         }
 
-        const data = await response.json();
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
 
-        if (!data.choices || !data.choices[0]?.message?.content) {
-            throw new Error('Invalid response format from API');
+        while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+
+            buffer += decoder.decode(value, { stream: true });
+            const lines = buffer.split('\n');
+            buffer = lines.pop() || '';
+
+            for (const line of lines) {
+                if (line.startsWith('data: ')) {
+                    const data = line.slice(6);
+                    if (data === '[DONE]') {
+                        onComplete();
+                        return;
+                    }
+
+                    try {
+                        const json = JSON.parse(data);
+                        const content = json.choices[0]?.delta?.content;
+                        if (content) {
+                            onChunk(content);
+                        }
+                    } catch {
+                        // Skip invalid JSON
+                    }
+                }
+            }
         }
 
-        return {
-            content: data.choices[0].message.content,
-            usage: data.usage,
-            model: data.model,
-        };
+        onComplete();
     } catch (error) {
-        clearTimeout(timeoutId);
-        throw handleApiError(error);
+        onError(error.message || MESSAGES_CONFIG.ERROR.GENERIC);
     }
 };
 export default sendMessageToGroq;

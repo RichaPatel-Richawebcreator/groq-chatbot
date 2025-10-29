@@ -16,9 +16,6 @@ const Hero = ({ onGetStarted }) => (
         <div className="bg-linear-to-br from-purple-500 to-pink-500 p-8 rounded-full inline-block animate-pulse">
           <Sparkles className="w-20 h-20 text-white" />
         </div>
-        {/* <div className="absolute -top-4 -right-4 bg-yellow-400 p-3 rounded-full animate-bounce">
-          <Zap className="w-8 h-8 text-white" />
-        </div> */}
       </div>
 
       {/* Hero Text */}
@@ -69,10 +66,14 @@ const Hero = ({ onGetStarted }) => (
         ))}
       </div>
 
-      <Button onClick={onGetStarted} className="text-lg px-8 py-4 float-right">
-        <MessageSquare className="w-6 h-6" />
-        Start Chatting Now
-      </Button>
+      {!onGetStarted.hidden && (
+        <div className="flex justify-center float-right">
+          <Button onClick={onGetStarted.action} className="text-lg px-8 py-4">
+            <MessageSquare className="w-6 h-6" />
+            Start Chatting Now
+          </Button>
+        </div>
+      )}
     </div>
   </div>
 );
