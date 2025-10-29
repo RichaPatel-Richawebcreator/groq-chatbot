@@ -46,7 +46,8 @@ npm run build
 
 ## Preview
 <img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/f95226bc-a62a-4d9d-840e-4f30c0dec2a0" />
-<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/9c5ec1a7-3a0b-4096-a3a1-6f5bfb0ebb94" />
-<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/7faf76fe-e9a1-4e14-85ab-eb0761028e2b" />
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/adad7df7-72b2-4e6d-956b-99f546e68e4e" />
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/ef2a6dad-b36d-456b-a79f-112b532398f0" />
+
 
 
