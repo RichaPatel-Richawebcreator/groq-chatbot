@@ -28,7 +28,7 @@ Get your free API key: https://console.groq.com/keys
 npm start
 ```
 
-Open http://localhost:3000
+Open http://localhost:5173
 
 ## 📦 Build
 
